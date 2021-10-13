@@ -258,18 +258,22 @@ void optimal(const double* A, const double* B, double *C, const int n, const int
                 register int ta = i * n + k; register int tta = ta + n; register int tb = k * n + j; register int ttb = tb + n;
                 register double a00 = A[ta]; register double a01 = A[ta + 1]; register double a10 = A[tta]; register double a11 = A[tta + 1];
                 register double b00 = B[tb]; register double b01 = B[tb + 1]; register double b10 = B[ttb]; register double b11 = B[ttb + 1];
-                m1 = (a00 + a11) * (b00 + b11);
-                m2 = (a10 + a11) * b00;
-                m3 = a00 * (b01 - b11);
-                m4 = a11 *(b10 - b00);
-                m5 = (a00 + a01) * b11;
-                m6 = (a10 - a00) * (b00 + b01);
-                m7 = (a01 - a11) * (b10 + b11);
-            }
+                //m1 = (a00 + a11) * (b00 + b11);
+                //m2 = (a10 + a11) * b00;
+                //m3 = a00 * (b01 - b11);
+                //m4 = a11 *(b10 - b00);
+                //m5 = (a00 + a01) * b11;
+                //m6 = (a10 - a00) * (b00 + b01);
+                //m7 = (a01 - a11) * (b10 + b11);
+				c00 = (a00 + a11) * (b00 + b11) + a11 *(b10 - b00) - (a00 + a01) * b11 + (a01 - a11) * (b10 + b11);
+				c01 = a00 * (b01 - b11) + (a00 + a01) * b11;
+				c10 =(a10 + a11) * b00 + a11 *(b10 - b00);
+				c11 =(a00 + a11) * (b00 + b11) + a00 * (b01 - b11) - (a10 + a11) * b00 + (a10 - a00) * (b00 + b01);
+			}
 
-            C[t] = m1 + m4 - m5 + m7;
-            C[t + 1] = m3 + m5;
-            C[tt] = m2 + m4;
-            C[tt + 1] = m1 + m3 - m2 + m6;
+            C[t] = c00;
+            C[t + 1] = c01;
+            C[tt] = c10;
+            C[tt + 1] = c11;
         }	
 }
