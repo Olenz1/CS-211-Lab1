@@ -79,6 +79,7 @@ void dgemm3(const double *A, const double *B, double *C, const int n)
 //Cache Reuse part 3
 void ijk(const double *A, const double *B, double *C, const int n) 
 {
+	/*
 	int i, j, k;
 	for (i = 0; i < n; i++)
 		for (j = 0; j < n; j++) {
@@ -87,6 +88,36 @@ void ijk(const double *A, const double *B, double *C, const int n)
 				r += A[i * n + k] * B[k * n + j];
 			C[i * n + j] = r;
 		}
+	*/
+	int i, j, k;
+    for (i = 0; i < n; i += 2)
+        for (j = 0; j < n; j += 2)
+        {
+            register int t = i * n + j; register int tt = t + n;
+            register double c00 = C[t]; register double c01 = C[t + 1];  register double c10 = C[tt]; register double c11 = C[tt + 1];
+
+            for (k = 0; k < n; k += 2) {
+                register int ta = i * n + k; register int tta = ta + n; register int tb = k * n + j; register int ttb = tb + n;
+                register double a00 = A[ta]; register double a01 = A[ta + 1]; register double a10 = A[tta]; register double a11 = A[tta + 1];
+                register double b00 = B[tb]; register double b01 = B[tb + 1]; register double b10 = B[ttb]; register double b11 = B[ttb + 1];
+                //m1 = (a00 + a11) * (b00 + b11);
+                //m2 = (a10 + a11) * b00;
+                //m3 = a00 * (b01 - b11);
+                //m4 = a11 *(b10 - b00);
+                //m5 = (a00 + a01) * b11;
+                //m6 = (a10 - a00) * (b00 + b01);
+                //m7 = (a01 - a11) * (b10 + b11);
+				c00 = (a00 + a11) * (b00 + b11) + a11 *(b10 - b00) - (a00 + a01) * b11 + (a01 - a11) * (b10 + b11);
+				c01 = a00 * (b01 - b11) + (a00 + a01) * b11;
+				c10 =(a10 + a11) * b00 + a11 *(b10 - b00);
+				c11 =(a00 + a11) * (b00 + b11) + a00 * (b01 - b11) - (a10 + a11) * b00 + (a10 - a00) * (b00 + b01);
+			}
+			
+            C[t] = c00;
+            C[t + 1] = c01;
+            C[tt] = c10;
+            C[tt + 1] = c11;
+        }	
 }
 
 void bijk(const double *A, const double *B, double *C, const int n, const int b) 
@@ -246,34 +277,5 @@ void bkji(const double *A, const double *B, double *C, const int n, const int b)
 //Cache Reuse part 4
 void optimal(const double* A, const double* B, double *C, const int n, const int b)
 {
-	int i, j, k;
-    for (i = 0; i < n; i += 2)
-        for (j = 0; j < n; j += 2)
-        {
-            register int t = i * n + j; register int tt = t + n;
-            register double c00 = C[t]; register double c01 = C[t + 1];  register double c10 = C[tt]; register double c11 = C[tt + 1];
-
-            for (k = 0; k < n; k += 2) {
-                /* 2 by 2 mini matrix multiplication using registers*/
-                register int ta = i * n + k; register int tta = ta + n; register int tb = k * n + j; register int ttb = tb + n;
-                register double a00 = A[ta]; register double a01 = A[ta + 1]; register double a10 = A[tta]; register double a11 = A[tta + 1];
-                register double b00 = B[tb]; register double b01 = B[tb + 1]; register double b10 = B[ttb]; register double b11 = B[ttb + 1];
-                //m1 = (a00 + a11) * (b00 + b11);
-                //m2 = (a10 + a11) * b00;
-                //m3 = a00 * (b01 - b11);
-                //m4 = a11 *(b10 - b00);
-                //m5 = (a00 + a01) * b11;
-                //m6 = (a10 - a00) * (b00 + b01);
-                //m7 = (a01 - a11) * (b10 + b11);
-				c00 = (a00 + a11) * (b00 + b11) + a11 *(b10 - b00) - (a00 + a01) * b11 + (a01 - a11) * (b10 + b11);
-				c01 = a00 * (b01 - b11) + (a00 + a01) * b11;
-				c10 =(a10 + a11) * b00 + a11 *(b10 - b00);
-				c11 =(a00 + a11) * (b00 + b11) + a00 * (b01 - b11) - (a10 + a11) * b00 + (a10 - a00) * (b00 + b01);
-			}
-
-            C[t] = c00;
-            C[t + 1] = c01;
-            C[tt] = c10;
-            C[tt + 1] = c11;
-        }	
+	
 }
