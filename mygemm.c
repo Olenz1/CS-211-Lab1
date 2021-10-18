@@ -50,7 +50,7 @@ void dgemm2(const double* A, const double* B, double* C, const int n)
 //Register Reuse part 3
 void dgemm3(const double* A, const double* B, double* C, const int n)
 {
-	/*
+	
 	int i, j, k;
 	for (i = 0; i < n; i += 2)
 		for (j = 0; j < n; j += 2)
@@ -74,7 +74,7 @@ void dgemm3(const double* A, const double* B, double* C, const int n)
 			C[tt] = c10;
 			C[tt + 1] = c11;
 		}
-	*/
+	/*
 	int i, j, k;
 	for (i = 0; i < n; i += 2)
 		for (j = 0; j < n; j += 2)
@@ -105,6 +105,7 @@ void dgemm3(const double* A, const double* B, double* C, const int n)
 			C[tt] = c10;
 			C[tt + 1] = c11;
 		}
+	*/
 }
 //Register Reuse part 3 End
 
