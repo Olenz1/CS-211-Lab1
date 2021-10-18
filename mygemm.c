@@ -50,6 +50,7 @@ void dgemm2(const double* A, const double* B, double* C, const int n)
 //Register Reuse part 3
 void dgemm3(const double* A, const double* B, double* C, const int n)
 {
+	/*
 	int i, j, k;
 	for (i = 0; i < n; i += 2)
 		for (j = 0; j < n; j += 2)
@@ -58,7 +59,7 @@ void dgemm3(const double* A, const double* B, double* C, const int n)
 			register double c00 = C[t]; register double c01 = C[t + 1];  register double c10 = C[tt]; register double c11 = C[tt + 1];
 
 			for (k = 0; k < n; k += 2) {
-				/* 2 by 2 mini matrix multiplication using registers*/
+				// 2 by 2 mini matrix multiplication using registers
 				register int ta = i * n + k; register int tta = ta + n; register int tb = k * n + j; register int ttb = tb + n;
 				register double a00 = A[ta]; register double a01 = A[ta + 1]; register double a10 = A[tta]; register double a11 = A[tta + 1];
 				register double b00 = B[tb]; register double b01 = B[tb + 1]; register double b10 = B[ttb]; register double b11 = B[ttb + 1];
@@ -72,21 +73,6 @@ void dgemm3(const double* A, const double* B, double* C, const int n)
 			C[t + 1] = c01;
 			C[tt] = c10;
 			C[tt + 1] = c11;
-		}
-}
-//Register Reuse part 3 End
-
-//Cache Reuse part 3
-void ijk(const double* A, const double* B, double* C, const int n)
-{
-	/*
-	int i, j, k;
-	for (i = 0; i < n; i++)
-		for (j = 0; j < n; j++) {
-			register double r = C[i * n + j];
-			for (k = 0; k < n; k++)
-				r += A[i * n + k] * B[k * n + j];
-			C[i * n + j] = r;
 		}
 	*/
 	int i, j, k;
@@ -118,6 +104,20 @@ void ijk(const double* A, const double* B, double* C, const int n)
 			C[t + 1] = c01;
 			C[tt] = c10;
 			C[tt + 1] = c11;
+		}
+}
+//Register Reuse part 3 End
+
+//Cache Reuse part 3
+void ijk(const double* A, const double* B, double* C, const int n)
+{
+	int i, j, k;
+	for (i = 0; i < n; i++)
+		for (j = 0; j < n; j++) {
+			register double r = C[i * n + j];
+			for (k = 0; k < n; k++)
+				r += A[i * n + k] * B[k * n + j];
+			C[i * n + j] = r;
 		}
 }
 
